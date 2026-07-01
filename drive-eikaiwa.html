@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>ドライブ英会話 | Week1&2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#12161d;
+    --surface:#1b212b;
+    --surface-2:#232a35;
+    --line:#2c3542;
+    --amber:#ffb020;
+    --amber-dim:#7a5a1c;
+    --teal:#35c9a1;
+    --teal-dim:#1d5d4a;
+    --text:#eef1f5;
+    --muted:#8a93a3;
+    --danger:#ff6b6b;
+    --safe-top:env(safe-area-inset-top);
+    --safe-bottom:env(safe-area-inset-bottom);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{
+    margin:0; padding:0; background:var(--bg); color:var(--text);
+    font-family:'Noto Sans JP', sans-serif;
+    overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+    height:100%;
+  }
+  body{
+    padding-top:var(--safe-top);
+    padding-bottom:var(--safe-bottom);
+    display:flex; flex-direction:column;
+  }
+  .disp{font-family:'Space Grotesk', sans-serif;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+
+  header{
+    padding:18px 20px 14px;
+    border-bottom:1px solid var(--line);
+    position:sticky; top:0; background:var(--bg); z-index:20;
+  }
+  header h1{
+    font-size:20px; margin:0 0 2px; letter-spacing:0.02em;
+    font-weight:700;
+  }
+  header p{margin:0; color:var(--muted); font-size:12.5px;}
+
+  nav.weektabs{
+    display:flex; gap:8px; padding:14px 20px 0;
+  }
+  .weektab{
+    flex:1; text-align:center; padding:10px 8px; border-radius:12px;
+    background:var(--surface); border:1px solid var(--line);
+    font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14px;
+    color:var(--muted);
+  }
+  .weektab .sub{display:block; font-size:11px; font-weight:400; margin-top:2px; font-family:'Noto Sans JP',sans-serif;}
+  .weektab.active{
+    color:#0d0f13;
+  }
+  .weektab.active.w1{background:var(--amber); border-color:var(--amber);}
+  .weektab.active.w2{background:var(--teal); border-color:var(--teal);}
+
+  .daychips{
+    display:flex; gap:8px; overflow-x:auto; padding:14px 20px 4px;
+    scrollbar-width:none;
+  }
+  .daychips::-webkit-scrollbar{display:none;}
+  .chip{
+    flex:0 0 auto; width:44px; height:44px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--surface); border:1px solid var(--line);
+    font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:600;
+    color:var(--muted); position:relative;
+  }
+  .chip.active{border-color:var(--amber); color:var(--amber);}
+  .chip.active.w2{border-color:var(--teal); color:var(--teal);}
+  .chip.done::after{
+    content:''; position:absolute; top:-2px; right:-2px;
+    width:10px; height:10px; border-radius:50%; background:var(--teal);
+    border:2px solid var(--bg);
+  }
+  .chip.w1.done::after{background:var(--amber);}
+
+  main{flex:1; overflow-y:auto; padding:6px 20px 140px;}
+
+  .prompt-card{
+    margin-top:16px; padding:16px; border-radius:16px;
+    background:linear-gradient(155deg, var(--surface-2), var(--surface));
+    border:1px solid var(--line);
+  }
+  .prompt-card .eyebrow{
+    font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em;
+    color:var(--muted); text-transform:uppercase;
+  }
+  .prompt-card .headline{
+    font-family:'Space Grotesk',sans-serif; font-size:17px; font-weight:600;
+    margin-top:6px; line-height:1.5;
+  }
+
+  .dial-wrap{
+    display:flex; flex-direction:column; align-items:center;
+    margin:22px 0 10px;
+  }
+  .dial{
+    width:132px; height:132px; border-radius:50%;
+    background:var(--surface); border:2px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    position:relative;
+  }
+  .dial .ring{
+    position:absolute; inset:-2px; border-radius:50%;
+    border:2px solid transparent;
+    pointer-events:none;
+  }
+  .dial.speaking .ring{
+    border-top-color:var(--amber); border-right-color:var(--amber);
+    animation:spin 1.1s linear infinite;
+  }
+  .dial.w2.speaking .ring{
+    border-top-color:var(--teal); border-right-color:var(--teal);
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .dial-btn{
+    width:100px; height:100px; border-radius:50%; border:none;
+    background:var(--amber); color:#0d0f13;
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:13px;
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    line-height:1.3;
+    position:relative; z-index:1;
+  }
+  .dial-btn.w2{background:var(--teal);}
+  .dial-btn.playing{background:var(--surface-2); color:var(--text); border:2px solid var(--amber);}
+  .dial-btn.w2.playing{border-color:var(--teal);}
+  .dial-caption{margin-top:10px; font-size:12px; color:var(--muted); text-align:center;}
+
+  .speedrow{
+    display:flex; align-items:center; gap:10px; margin:14px 2px 0;
+  }
+  .speedrow label{font-size:12px; color:var(--muted); white-space:nowrap;}
+  input[type=range]{
+    -webkit-appearance:none; appearance:none;
+    flex:1; height:4px; border-radius:2px; background:var(--line);
+    outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; appearance:none;
+    width:18px; height:18px; border-radius:50%;
+    background:var(--amber); border:2px solid #0d0f13;
+  }
+  .w2 input[type=range]::-webkit-slider-thumb{background:var(--teal);}
+
+  .phraselist{margin-top:18px; display:flex; flex-direction:column; gap:10px;}
+  .phrase-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:14px;
+    padding:13px 14px; display:flex; align-items:center; gap:12px;
+  }
+  .phrase-card .num{
+    font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted);
+    width:18px; flex:0 0 auto;
+  }
+  .phrase-card .txt{flex:1; min-width:0;}
+  .phrase-card .en{font-size:14.5px; font-weight:500; line-height:1.4;}
+  .phrase-card .ja{font-size:12px; color:var(--muted); margin-top:3px;}
+  .phrase-card .playbtn{
+    flex:0 0 auto; width:38px; height:38px; border-radius:50%;
+    border:1px solid var(--line); background:var(--surface-2); color:var(--text);
+    display:flex; align-items:center; justify-content:center; font-size:14px;
+  }
+  .phrase-card .playbtn.active{border-color:var(--amber); color:var(--amber);}
+  .w2 .phrase-card .playbtn.active{border-color:var(--teal); color:var(--teal);}
+
+  .donebtn{
+    margin-top:20px; width:100%; padding:14px; border-radius:14px;
+    border:1px solid var(--line); background:var(--surface); color:var(--muted);
+    font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14px;
+  }
+  .donebtn.on{background:var(--amber); color:#0d0f13; border-color:var(--amber);}
+  .donebtn.w2.on{background:var(--teal); border-color:var(--teal);}
+
+  .progressbar-wrap{
+    padding:10px 20px 16px; border-top:1px solid var(--line);
+    display:flex; align-items:center; gap:12px;
+  }
+  .progressbar{
+    flex:1; height:6px; border-radius:3px; background:var(--surface-2); overflow:hidden;
+  }
+  .progressbar .fill{
+    height:100%; background:linear-gradient(90deg, var(--amber), var(--teal));
+    width:0%;
+  }
+  .progressbar-wrap .count{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--muted); white-space:nowrap;}
+
+  .toast{
+    position:fixed; left:50%; bottom:calc(90px + var(--safe-bottom));
+    transform:translate(-50%, 20px); opacity:0;
+    background:var(--surface-2); border:1px solid var(--line); color:var(--text);
+    padding:10px 16px; border-radius:12px; font-size:13px;
+    transition:all .25s ease; pointer-events:none; z-index:50;
+  }
+  .toast.show{opacity:1; transform:translate(-50%,0);}
+</style>
+</head>
+<body>
+
+<header>
+  <h1 class="disp">🚗 ドライブ英会話ラボ</h1>
+  <p>運転中は音だけでOK。週1はシャドーイング、週2は景色の実況練習。</p>
+</header>
+
+<nav class="weektabs">
+  <div class="weektab active w1" data-week="1">WEEK 1<span class="sub">シャドーイング</span></div>
+  <div class="weektab w2" data-week="2">WEEK 2<span class="sub">景色の実況</span></div>
+</nav>
+
+<div class="daychips" id="dayChips"></div>
+
+<main id="mainArea"></main>
+
+<div class="progressbar-wrap">
+  <div class="progressbar"><div class="fill" id="progressFill"></div></div>
+  <div class="count mono" id="progressCount">0/14 DAYS</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  var DATA = {
+    1: [
+      { theme:"あいさつ・天気", items:[
+        {en:"Good morning! How are you today?", ja:"おはようございます。調子はどうですか？"},
+        {en:"It's a beautiful day, isn't it?", ja:"いい天気ですね。"},
+        {en:"It looks like it's going to rain.", ja:"雨が降りそうですね。"},
+        {en:"It's pretty cold this morning.", ja:"今朝はかなり寒いですね。"},
+        {en:"Have a great day!", ja:"良い一日を！"}
+      ]},
+      { theme:"交通・移動", items:[
+        {en:"The traffic is heavy today.", ja:"今日は渋滞がひどいですね。"},
+        {en:"I'm stuck in traffic right now.", ja:"今、渋滞にはまっています。"},
+        {en:"It'll take about an hour to get there.", ja:"そこまで1時間くらいかかります。"},
+        {en:"I'm on my way.", ja:"今向かっています。"},
+        {en:"Sorry, I'm running a little late.", ja:"すみません、少し遅れています。"}
+      ]},
+      { theme:"仕事の話", items:[
+        {en:"I have a meeting this afternoon.", ja:"午後に会議があります。"},
+        {en:"Let me check my schedule.", ja:"スケジュールを確認させてください。"},
+        {en:"Can we reschedule the call?", ja:"電話の予定を変更できますか？"},
+        {en:"I'll send you the details by email.", ja:"詳細はメールで送ります。"},
+        {en:"Thanks for your patience.", ja:"お待ちいただきありがとうございます。"}
+      ]},
+      { theme:"気持ち・感想", items:[
+        {en:"I'm really looking forward to it.", ja:"とても楽しみにしています。"},
+        {en:"That sounds like a great idea.", ja:"それはいい考えですね。"},
+        {en:"I'm a bit tired today.", ja:"今日は少し疲れています。"},
+        {en:"I appreciate your help.", ja:"助けてくれてありがとうございます。"},
+        {en:"That makes sense.", ja:"なるほど、納得です。"}
+      ]},
+      { theme:"電話・確認", items:[
+        {en:"Could you say that again, please?", ja:"もう一度言っていただけますか？"},
+        {en:"Sorry, could you speak a little slower?", ja:"すみません、もう少しゆっくり話してもらえますか？"},
+        {en:"I didn't quite catch that.", ja:"今のところ聞き取れませんでした。"},
+        {en:"Let me confirm what you said.", ja:"おっしゃったことを確認させてください。"},
+        {en:"I'll get back to you soon.", ja:"すぐに折り返します。"}
+      ]},
+      { theme:"予定・提案", items:[
+        {en:"How about next Tuesday?", ja:"来週の火曜日はどうですか？"},
+        {en:"Does that work for you?", ja:"それで大丈夫ですか？"},
+        {en:"Let's touch base tomorrow.", ja:"明日また連絡を取り合いましょう。"},
+        {en:"I'll follow up next week.", ja:"来週フォローアップします。"},
+        {en:"Sounds good to me.", ja:"私はそれで大丈夫です。"}
+      ]},
+      { theme:"週の振り返り", items:[
+        {en:"This week has been really busy.", ja:"今週は本当に忙しかったです。"},
+        {en:"I learned a lot today.", ja:"今日はたくさん学びました。"},
+        {en:"I did my best.", ja:"精一杯やりました。"},
+        {en:"I'm proud of what I accomplished.", ja:"自分の成果に誇りを持っています。"},
+        {en:"See you next week.", ja:"また来週。"}
+      ]}
+    ],
+    2: [
+      { prompt:"今日の天気を英語で実況してみましょう。", items:[
+        {en:"It's sunny today.", ja:"今日は晴れています。"},
+        {en:"The sky is really blue.", ja:"空がとても青いです。"},
+        {en:"It's cloudy and a bit cold.", ja:"曇っていて少し寒いです。"},
+        {en:"I can see some rain clouds.", ja:"雨雲が見えます。"}
+      ]},
+      { prompt:"周りの交通状況を実況してみましょう。", items:[
+        {en:"The traffic is moving slowly.", ja:"車の流れが遅いです。"},
+        {en:"There are a lot of cars on the road.", ja:"道路に車がたくさんあります。"},
+        {en:"The road is pretty empty today.", ja:"今日は道が空いていますね。"},
+        {en:"I see a traffic light ahead.", ja:"前方に信号が見えます。"}
+      ]},
+      { prompt:"見えている景色を説明してみましょう。", items:[
+        {en:"I can see mountains in the distance.", ja:"遠くに山が見えます。"},
+        {en:"There's a convenience store on the corner.", ja:"角にコンビニがあります。"},
+        {en:"The trees are turning green.", ja:"木々が緑になってきています。"},
+        {en:"There's a river next to the road.", ja:"道路の横に川があります。"}
+      ]},
+      { prompt:"今の自分の状態を実況してみましょう。", items:[
+        {en:"I'm feeling pretty good today.", ja:"今日は調子がいいです。"},
+        {en:"I'm a little sleepy this morning.", ja:"今朝は少し眠いです。"},
+        {en:"I'm thinking about today's schedule.", ja:"今日の予定について考えています。"},
+        {en:"I'm looking forward to lunch.", ja:"ランチが楽しみです。"}
+      ]},
+      { prompt:"聞こえている音について話してみましょう。", items:[
+        {en:"I'm listening to the radio.", ja:"ラジオを聞いています。"},
+        {en:"This song is really catchy.", ja:"この曲は耳に残りますね。"},
+        {en:"The host is talking about the weather.", ja:"司会者が天気について話しています。"},
+        {en:"I like this kind of music.", ja:"こういう音楽が好きです。"}
+      ]},
+      { prompt:"これからの予定を実況してみましょう。", items:[
+        {en:"I'm heading to a client's office.", ja:"取引先のオフィスに向かっています。"},
+        {en:"I have three meetings today.", ja:"今日は3つ会議があります。"},
+        {en:"I need to stop by the store first.", ja:"まず店に寄る必要があります。"},
+        {en:"After this, I'll go back to the office.", ja:"この後、オフィスに戻ります。"}
+      ]},
+      { prompt:"週末の予定や今週の振り返りを話してみましょう。", items:[
+        {en:"I'm planning to relax this weekend.", ja:"週末はゆっくりする予定です。"},
+        {en:"This week went by so fast.", ja:"今週はあっという間でした。"},
+        {en:"I want to spend time with my family.", ja:"家族と過ごす時間を持ちたいです。"},
+        {en:"I'm ready for a good rest.", ja:"しっかり休む準備ができています。"}
+      ]}
+    ]
+  };
+
+  var STORAGE_KEY = "drive-eikaiwa-progress-v1";
+  var state = {
+    week: 1,
+    day: 1,
+    rate: 0.85,
+    progress: {},
+    autoPlaying: false,
+    autoTimer: null,
+    autoIndex: 0,
+    voices: []
+  };
+
+  function loadProgress(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if(raw){ state.progress = JSON.parse(raw) || {}; }
+    }catch(e){ state.progress = {}; }
+  }
+  function saveProgress(){
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.progress));
+    }catch(e){ /* ignore quota / privacy mode errors */ }
+  }
+  function keyFor(week, day){ return "w"+week+"d"+day; }
+
+  function showToast(msg){
+    var t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(function(){ t.classList.remove("show"); }, 1600);
+  }
+
+  function pickVoice(langPrefix){
+    var voices = state.voices;
+    if(!voices || !voices.length) return null;
+    var exact = voices.find(function(v){ return v.lang && v.lang.toLowerCase() === langPrefix.toLowerCase(); });
+    if(exact) return exact;
+    var prefixRe = new RegExp('^'+langPrefix.split('-')[0], 'i');
+    return voices.find(function(v){ return prefixRe.test(v.lang); }) || null;
+  }
+
+  // iOS Safari has a known bug where speechSynthesis silently pauses
+  // after ~15 seconds of continuous use. Nudging resume() periodically
+  // during playback works around it.
+  var keepAliveTimer = null;
+  function startKeepAlive(){
+    stopKeepAlive();
+    keepAliveTimer = setInterval(function(){
+      try{
+        if(window.speechSynthesis.speaking && !window.speechSynthesis.paused){
+          window.speechSynthesis.pause();
+          window.speechSynthesis.resume();
+        }
+      }catch(e){}
+    }, 4000);
+  }
+  function stopKeepAlive(){
+    if(keepAliveTimer){ clearInterval(keepAliveTimer); keepAliveTimer = null; }
+  }
+
+  function speak(text, lang, onend){
+    try{
+      if(!('speechSynthesis' in window)){
+        showToast("この端末は音声読み上げに未対応です");
+        if(onend) onend();
+        return;
+      }
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = lang;
+      u.rate = (lang.indexOf('ja') === 0) ? 1.0 : state.rate;
+      var v = pickVoice(lang);
+      if(v) u.voice = v;
+      var done = false;
+      var finish = function(){
+        if(done) return;
+        done = true;
+        if(onend) onend();
+      };
+      u.onend = finish;
+      u.onerror = finish;
+      // Safety net: if onend never fires (a known WebKit flake), don't get stuck.
+      var fallbackMs = Math.max(2500, text.length * 90);
+      setTimeout(finish, fallbackMs);
+      window.speechSynthesis.speak(u);
+    }catch(e){
+      if(onend) onend();
+    }
+  }
+
+  function stopSpeaking(){
+    try{ window.speechSynthesis.cancel(); }catch(e){}
+  }
+
+  function getDaySet(){
+    return DATA[state.week][state.day-1];
+  }
+
+  function renderDayChips(){
+    var wrap = document.getElementById("dayChips");
+    wrap.innerHTML = "";
+    var wClass = state.week === 2 ? " w2" : "";
+    for(var d=1; d<=7; d++){
+      var done = !!state.progress[keyFor(state.week, d)];
+      var el = document.createElement("div");
+      el.className = "chip" + wClass + (d===state.day ? " active":"") + (done ? " done":"");
+      el.setAttribute("data-day", d);
+      el.textContent = d;
+      wrap.appendChild(el);
+    }
+  }
+
+  function renderMain(){
+    var main = document.getElementById("mainArea");
+    var set = getDaySet();
+    var wClass = state.week === 2 ? " w2" : "";
+    var html = "";
+
+    if(state.week === 1){
+      html += '<div class="prompt-card">' +
+        '<div class="eyebrow mono">WEEK 1 · DAY '+state.day+'</div>' +
+        '<div class="headline">'+set.theme+'</div>' +
+        '</div>';
+    } else {
+      html += '<div class="prompt-card">' +
+        '<div class="eyebrow mono">WEEK 2 · DAY '+state.day+'</div>' +
+        '<div class="headline">'+set.prompt+'</div>' +
+        '</div>';
+    }
+
+    html += '<div class="dial-wrap">' +
+      '<div class="dial'+wClass+'" id="dial"><div class="ring"></div>' +
+        '<button class="dial-btn'+wClass+'" id="autoBtn">オート<br>再生</button>' +
+      '</div>' +
+      '<div class="dial-caption" id="dialCaption">日本語の意味→英語フレーズの順に読み上げます。英語の後の間で声に出して繰り返そう</div>' +
+      '</div>';
+
+    html += '<div class="speedrow'+wClass+'">' +
+      '<label class="mono">SPEED</label>' +
+      '<input type="range" id="rateSlider" min="0.6" max="1.1" step="0.05" value="'+state.rate+'">' +
+      '<label class="mono" id="rateLabel">'+state.rate.toFixed(2)+'</label>' +
+      '</div>';
+
+    html += '<div class="phraselist">';
+    set.items.forEach(function(item, idx){
+      html += '<div class="phrase-card" data-idx="'+idx+'">' +
+        '<div class="num mono">'+String(idx+1).padStart(2,'0')+'</div>' +
+        '<div class="txt"><div class="en">'+item.en+'</div><div class="ja">'+item.ja+'</div></div>' +
+        '<button class="playbtn" data-idx="'+idx+'">▶</button>' +
+        '</div>';
+    });
+    html += '</div>';
+
+    var doneNow = !!state.progress[keyFor(state.week, state.day)];
+    html += '<button class="donebtn'+wClass+(doneNow?' on':'')+'" id="doneBtn">' +
+      (doneNow ? '✓ この日は完了しました' : 'この日を完了にする') +
+      '</button>';
+
+    main.innerHTML = html;
+  }
+
+  function renderProgress(){
+    var total = 14;
+    var done = 0;
+    for(var w=1; w<=2; w++){
+      for(var d=1; d<=7; d++){
+        if(state.progress[keyFor(w,d)]) done++;
+      }
+    }
+    document.getElementById("progressFill").style.width = (done/total*100)+"%";
+    document.getElementById("progressCount").textContent = done+"/14 DAYS";
+  }
+
+  function renderAll(){
+    stopAuto();
+    renderDayChips();
+    renderMain();
+    renderProgress();
+  }
+
+  function stopAuto(){
+    state.autoPlaying = false;
+    state.autoIndex = 0;
+    if(state.autoTimer){ clearTimeout(state.autoTimer); state.autoTimer = null; }
+    stopKeepAlive();
+    stopSpeaking();
+    var dial = document.getElementById("dial");
+    var btn = document.getElementById("autoBtn");
+    if(dial) dial.classList.remove("speaking");
+    if(btn){ btn.classList.remove("playing"); btn.innerHTML = "オート<br>再生"; }
+    document.querySelectorAll(".playbtn.active").forEach(function(b){ b.classList.remove("active"); });
+  }
+
+  function playAutoStep(){
+    var set = getDaySet();
+    if(!state.autoPlaying) return;
+    if(state.autoIndex >= set.items.length){
+      stopAuto();
+      showToast("この日のフレーズを一周しました");
+      return;
+    }
+    var item = set.items[state.autoIndex];
+    var caption = document.getElementById("dialCaption");
+    document.querySelectorAll(".playbtn").forEach(function(b){ b.classList.remove("active"); });
+    var activeBtn = document.querySelector('.playbtn[data-idx="'+state.autoIndex+'"]');
+    if(activeBtn) activeBtn.classList.add("active");
+
+    if(caption) caption.textContent = (state.autoIndex+1)+" / "+set.items.length+"：まず日本語の意味です";
+
+    // Step 1: Japanese meaning, so you know what you're about to shadow.
+    speak(item.ja, "ja-JP", function(){
+      if(!state.autoPlaying) return;
+      state.autoTimer = setTimeout(function(){
+        if(!state.autoPlaying) return;
+        if(caption) caption.textContent = (state.autoIndex+1)+" / "+set.items.length+"：続いて英語。聞いたら声に出して繰り返そう";
+        // Step 2: English phrase, then a pause for the user to repeat aloud.
+        speak(item.en, "en-US", function(){
+          if(!state.autoPlaying) return;
+          state.autoTimer = setTimeout(function(){
+            if(!state.autoPlaying) return;
+            state.autoIndex++;
+            playAutoStep();
+          }, 2600);
+        });
+      }, 500);
+    });
+  }
+
+  function startAuto(){
+    state.autoPlaying = true;
+    state.autoIndex = 0;
+    var dial = document.getElementById("dial");
+    var btn = document.getElementById("autoBtn");
+    if(dial) dial.classList.add("speaking");
+    if(btn){ btn.classList.add("playing"); btn.innerHTML = "停止"; }
+    startKeepAlive();
+    playAutoStep();
+  }
+
+  function toggleAuto(){
+    if(state.autoPlaying){ stopAuto(); }
+    else { startAuto(); }
+  }
+
+  function handleSinglePlay(idx){
+    stopAuto();
+    var set = getDaySet();
+    var item = set.items[idx];
+    if(!item) return;
+    document.querySelectorAll(".playbtn").forEach(function(b){ b.classList.remove("active"); });
+    var btn = document.querySelector('.playbtn[data-idx="'+idx+'"]');
+    if(btn) btn.classList.add("active");
+    speak(item.ja, "ja-JP", function(){
+      speak(item.en, "en-US", function(){
+        if(btn) btn.classList.remove("active");
+      });
+    });
+  }
+
+  function toggleDone(){
+    var k = keyFor(state.week, state.day);
+    if(state.progress[k]){
+      delete state.progress[k];
+    } else {
+      state.progress[k] = true;
+      showToast("完了を記録しました！");
+    }
+    saveProgress();
+    renderMain();
+    renderDayChips();
+    renderProgress();
+  }
+
+  function init(){
+    loadProgress();
+
+    if('speechSynthesis' in window){
+      function loadVoices(){ state.voices = window.speechSynthesis.getVoices(); }
+      loadVoices();
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
+    renderAll();
+
+    // Week tabs
+    document.querySelector("nav.weektabs").addEventListener("click", function(e){
+      var el = e.target.closest(".weektab");
+      if(!el) return;
+      var w = parseInt(el.getAttribute("data-week"), 10);
+      if(w === state.week) return;
+      state.week = w;
+      state.day = 1;
+      document.querySelectorAll(".weektab").forEach(function(t){ t.classList.remove("active"); });
+      el.classList.add("active");
+      renderAll();
+    });
+
+    // Day chips (delegated, re-rendered each time so re-bind via parent)
+    document.getElementById("dayChips").addEventListener("click", function(e){
+      var el = e.target.closest(".chip");
+      if(!el) return;
+      var d = parseInt(el.getAttribute("data-day"), 10);
+      if(d === state.day) return;
+      state.day = d;
+      renderAll();
+    });
+
+    // Main area delegated events: auto button, play buttons, done button, slider
+    document.getElementById("mainArea").addEventListener("click", function(e){
+      var autoBtn = e.target.closest("#autoBtn");
+      if(autoBtn){ toggleAuto(); return; }
+
+      var playBtn = e.target.closest(".playbtn");
+      if(playBtn){
+        var idx = parseInt(playBtn.getAttribute("data-idx"), 10);
+        handleSinglePlay(idx);
+        return;
+      }
+
+      var doneBtn = e.target.closest("#doneBtn");
+      if(doneBtn){ toggleDone(); return; }
+    });
+
+    document.getElementById("mainArea").addEventListener("input", function(e){
+      var slider = e.target.closest("#rateSlider");
+      if(slider){
+        state.rate = parseFloat(slider.value);
+        var label = document.getElementById("rateLabel");
+        if(label) label.textContent = state.rate.toFixed(2);
+      }
+    });
+
+    document.addEventListener("visibilitychange", function(){
+      if(document.hidden){ stopAuto(); }
+    });
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>
