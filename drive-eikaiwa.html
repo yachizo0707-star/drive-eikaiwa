@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
-<title>ドライブ英会話 | Week1&2</title>
+<title>ドライブ英会話 | Week1-3</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
@@ -17,6 +17,8 @@
     --amber-dim:#7a5a1c;
     --teal:#35c9a1;
     --teal-dim:#1d5d4a;
+    --violet:#b78cff;
+    --violet-dim:#5b4a8a;
     --text:#eef1f5;
     --muted:#8a93a3;
     --danger:#ff6b6b;
@@ -65,6 +67,7 @@
   }
   .weektab.active.w1{background:var(--amber); border-color:var(--amber);}
   .weektab.active.w2{background:var(--teal); border-color:var(--teal);}
+  .weektab.active.w3{background:var(--violet); border-color:var(--violet);}
 
   .daychips{
     display:flex; gap:8px; overflow-x:auto; padding:14px 20px 4px;
@@ -80,12 +83,14 @@
   }
   .chip.active{border-color:var(--amber); color:var(--amber);}
   .chip.active.w2{border-color:var(--teal); color:var(--teal);}
+  .chip.active.w3{border-color:var(--violet); color:var(--violet);}
   .chip.done::after{
     content:''; position:absolute; top:-2px; right:-2px;
     width:10px; height:10px; border-radius:50%; background:var(--teal);
     border:2px solid var(--bg);
   }
   .chip.w1.done::after{background:var(--amber);}
+  .chip.w3.done::after{background:var(--violet);}
 
   main{flex:1; overflow-y:auto; padding:6px 20px 140px;}
 
@@ -125,6 +130,9 @@
   .dial.w2.speaking .ring{
     border-top-color:var(--teal); border-right-color:var(--teal);
   }
+  .dial.w3.speaking .ring{
+    border-top-color:var(--violet); border-right-color:var(--violet);
+  }
   @keyframes spin{ to{ transform:rotate(360deg); } }
   .dial-btn{
     width:100px; height:100px; border-radius:50%; border:none;
@@ -135,8 +143,10 @@
     position:relative; z-index:1;
   }
   .dial-btn.w2{background:var(--teal);}
+  .dial-btn.w3{background:var(--violet);}
   .dial-btn.playing{background:var(--surface-2); color:var(--text); border:2px solid var(--amber);}
   .dial-btn.w2.playing{border-color:var(--teal);}
+  .dial-btn.w3.playing{border-color:var(--violet);}
   .dial-caption{margin-top:10px; font-size:12px; color:var(--muted); text-align:center;}
 
   .speedrow{
@@ -154,6 +164,7 @@
     background:var(--amber); border:2px solid #0d0f13;
   }
   .w2 input[type=range]::-webkit-slider-thumb{background:var(--teal);}
+  .w3 input[type=range]::-webkit-slider-thumb{background:var(--violet);}
 
   .phraselist{margin-top:18px; display:flex; flex-direction:column; gap:10px;}
   .phrase-card{
@@ -174,6 +185,7 @@
   }
   .phrase-card .playbtn.active{border-color:var(--amber); color:var(--amber);}
   .w2 .phrase-card .playbtn.active{border-color:var(--teal); color:var(--teal);}
+  .w3 .phrase-card .playbtn.active{border-color:var(--violet); color:var(--violet);}
 
   .donebtn{
     margin-top:20px; width:100%; padding:14px; border-radius:14px;
@@ -182,6 +194,7 @@
   }
   .donebtn.on{background:var(--amber); color:#0d0f13; border-color:var(--amber);}
   .donebtn.w2.on{background:var(--teal); border-color:var(--teal);}
+  .donebtn.w3.on{background:var(--violet); border-color:var(--violet);}
 
   .progressbar-wrap{
     padding:10px 20px 16px; border-top:1px solid var(--line);
@@ -210,12 +223,13 @@
 
 <header>
   <h1 class="disp">🚗 ドライブ英会話ラボ</h1>
-  <p>運転中は音だけでOK。週1はシャドーイング、週2は景色の実況練習。</p>
+  <p>運転中は音だけでOK。週1はシャドーイング、週2は景色の実況、週3は瞬間英作文。</p>
 </header>
 
 <nav class="weektabs">
   <div class="weektab active w1" data-week="1">WEEK 1<span class="sub">シャドーイング</span></div>
   <div class="weektab w2" data-week="2">WEEK 2<span class="sub">景色の実況</span></div>
+  <div class="weektab w3" data-week="3">WEEK 3<span class="sub">瞬間英作文</span></div>
 </nav>
 
 <div class="daychips" id="dayChips"></div>
@@ -224,7 +238,7 @@
 
 <div class="progressbar-wrap">
   <div class="progressbar"><div class="fill" id="progressFill"></div></div>
-  <div class="count mono" id="progressCount">0/14 DAYS</div>
+  <div class="count mono" id="progressCount">0/21 DAYS</div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -328,6 +342,57 @@
         {en:"I want to spend time with my family.", ja:"家族と過ごす時間を持ちたいです。"},
         {en:"I'm ready for a good rest.", ja:"しっかり休む準備ができています。"}
       ]}
+    ],
+    3: [
+      { theme:"あいさつ・自己紹介", items:[
+        {ja:"はじめまして、田中と申します。", en:"Nice to meet you, I'm Tanaka."},
+        {ja:"本日はお時間いただきありがとうございます。", en:"Thank you for your time today."},
+        {ja:"御社のことは前から存じておりました。", en:"I've known about your company for a while."},
+        {ja:"こちらが弊社の資料です。", en:"Here is our company material."},
+        {ja:"何かご質問はありますか。", en:"Do you have any questions?"}
+      ]},
+      { theme:"電話・スケジュール調整", items:[
+        {ja:"来週の水曜日はご都合いかがでしょうか。", en:"How does next Wednesday work for you?"},
+        {ja:"少しお時間をいただけますか。", en:"Could I have a little of your time?"},
+        {ja:"その件については後ほどご連絡します。", en:"I'll get back to you about that later."},
+        {ja:"会議を30分早めることは可能ですか。", en:"Is it possible to move the meeting up by 30 minutes?"},
+        {ja:"確認のため、もう一度お伺いします。", en:"Let me ask again just to confirm."}
+      ]},
+      { theme:"商談・価格交渉", items:[
+        {ja:"こちらの価格でご検討いただけますか。", en:"Could you consider this price?"},
+        {ja:"もう少しお安くすることは可能でしょうか。", en:"Would it be possible to lower the price a bit?"},
+        {ja:"その条件でしたら問題ありません。", en:"That condition works fine for us."},
+        {ja:"他社とも比較検討しております。", en:"We're also comparing with other companies."},
+        {ja:"来月から新しい価格を適用します。", en:"We'll apply the new price starting next month."}
+      ]},
+      { theme:"トラブル対応・お詫び", items:[
+        {ja:"ご迷惑をおかけして申し訳ございません。", en:"I'm sorry for the inconvenience."},
+        {ja:"すぐに対応いたします。", en:"We'll take care of it right away."},
+        {ja:"原因を確認して、ご報告します。", en:"We'll check the cause and report back to you."},
+        {ja:"今後は同じミスがないよう注意します。", en:"We'll make sure this doesn't happen again."},
+        {ja:"ご理解いただき感謝します。", en:"I appreciate your understanding."}
+      ]},
+      { theme:"提案・アイデア", items:[
+        {ja:"こんな方法はいかがでしょうか。", en:"How about this approach?"},
+        {ja:"もっと効率的な方法があるかもしれません。", en:"There might be a more efficient way."},
+        {ja:"一度試してみる価値はあると思います。", en:"I think it's worth trying once."},
+        {ja:"チームで話し合ってみましょう。", en:"Let's discuss it as a team."},
+        {ja:"良いアイデアですね。", en:"That's a good idea."}
+      ]},
+      { theme:"感謝・締めの言葉", items:[
+        {ja:"本日はありがとうございました。", en:"Thank you very much for today."},
+        {ja:"また近いうちにお会いしましょう。", en:"Let's meet again soon."},
+        {ja:"今後ともよろしくお願いします。", en:"I look forward to working with you."},
+        {ja:"気をつけてお帰りください。", en:"Please get home safely."},
+        {ja:"良い一日をお過ごしください。", en:"Have a wonderful day."}
+      ]},
+      { theme:"振り返り・まとめ", items:[
+        {ja:"今週はたくさんのことを学びました。", en:"I learned a lot this week."},
+        {ja:"自分の英語が少し伸びた気がします。", en:"I feel like my English has improved a bit."},
+        {ja:"来週も引き続き頑張りたいです。", en:"I want to keep working hard next week."},
+        {ja:"運転中の練習は思ったより効果的です。", en:"Practicing while driving is more effective than I expected."},
+        {ja:"この積み重ねが自信につながります。", en:"This steady practice builds confidence."}
+      ]}
     ]
   };
 
@@ -428,10 +493,14 @@
     return DATA[state.week][state.day-1];
   }
 
+  function weekClass(week){
+    return week === 2 ? " w2" : (week === 3 ? " w3" : "");
+  }
+
   function renderDayChips(){
     var wrap = document.getElementById("dayChips");
     wrap.innerHTML = "";
-    var wClass = state.week === 2 ? " w2" : "";
+    var wClass = weekClass(state.week);
     for(var d=1; d<=7; d++){
       var done = !!state.progress[keyFor(state.week, d)];
       var el = document.createElement("div");
@@ -445,26 +514,30 @@
   function renderMain(){
     var main = document.getElementById("mainArea");
     var set = getDaySet();
-    var wClass = state.week === 2 ? " w2" : "";
+    var wClass = weekClass(state.week);
     var html = "";
 
-    if(state.week === 1){
-      html += '<div class="prompt-card">' +
-        '<div class="eyebrow mono">WEEK 1 · DAY '+state.day+'</div>' +
-        '<div class="headline">'+set.theme+'</div>' +
-        '</div>';
-    } else {
+    if(state.week === 2){
       html += '<div class="prompt-card">' +
         '<div class="eyebrow mono">WEEK 2 · DAY '+state.day+'</div>' +
         '<div class="headline">'+set.prompt+'</div>' +
         '</div>';
+    } else {
+      html += '<div class="prompt-card">' +
+        '<div class="eyebrow mono">WEEK '+state.week+' · DAY '+state.day+'</div>' +
+        '<div class="headline">'+set.theme+'</div>' +
+        '</div>';
     }
+
+    var captionDefault = state.week === 3
+      ? "日本語を聞いて英語に変換してみましょう。少し間を置いて正解の英語が流れます"
+      : "日本語の意味→英語フレーズの順に読み上げます。英語の後の間で声に出して繰り返そう";
 
     html += '<div class="dial-wrap">' +
       '<div class="dial'+wClass+'" id="dial"><div class="ring"></div>' +
         '<button class="dial-btn'+wClass+'" id="autoBtn">オート<br>再生</button>' +
       '</div>' +
-      '<div class="dial-caption" id="dialCaption">日本語の意味→英語フレーズの順に読み上げます。英語の後の間で声に出して繰り返そう</div>' +
+      '<div class="dial-caption" id="dialCaption">'+captionDefault+'</div>' +
       '</div>';
 
     html += '<div class="speedrow'+wClass+'">' +
@@ -475,9 +548,12 @@
 
     html += '<div class="phraselist">';
     set.items.forEach(function(item, idx){
+      var mainText = (state.week === 3) ? item.ja : item.en;
+      var subText = (state.week === 3) ? item.en : item.ja;
+      var subLabel = (state.week === 3) ? '→ ' : '';
       html += '<div class="phrase-card" data-idx="'+idx+'">' +
         '<div class="num mono">'+String(idx+1).padStart(2,'0')+'</div>' +
-        '<div class="txt"><div class="en">'+item.en+'</div><div class="ja">'+item.ja+'</div></div>' +
+        '<div class="txt"><div class="en">'+mainText+'</div><div class="ja">'+subLabel+subText+'</div></div>' +
         '<button class="playbtn" data-idx="'+idx+'">▶</button>' +
         '</div>';
     });
@@ -492,15 +568,15 @@
   }
 
   function renderProgress(){
-    var total = 14;
+    var total = 21;
     var done = 0;
-    for(var w=1; w<=2; w++){
+    for(var w=1; w<=3; w++){
       for(var d=1; d<=7; d++){
         if(state.progress[keyFor(w,d)]) done++;
       }
     }
     document.getElementById("progressFill").style.width = (done/total*100)+"%";
-    document.getElementById("progressCount").textContent = done+"/14 DAYS";
+    document.getElementById("progressCount").textContent = done+"/21 DAYS";
   }
 
   function renderAll(){
@@ -537,24 +613,30 @@
     var activeBtn = document.querySelector('.playbtn[data-idx="'+state.autoIndex+'"]');
     if(activeBtn) activeBtn.classList.add("active");
 
-    if(caption) caption.textContent = (state.autoIndex+1)+" / "+set.items.length+"：まず日本語の意味です";
+    var isW3 = state.week === 3;
+    var thinkPause = isW3 ? 4000 : 500;
+    var nextPause = isW3 ? 2200 : 2600;
 
-    // Step 1: Japanese meaning, so you know what you're about to shadow.
+    if(caption) caption.textContent = (state.autoIndex+1)+" / "+set.items.length+
+      (isW3 ? "：日本語を聞いて英語に変換しよう" : "：まず日本語の意味です");
+
+    // Step 1: Japanese sentence / meaning.
     speak(item.ja, "ja-JP", function(){
       if(!state.autoPlaying) return;
       state.autoTimer = setTimeout(function(){
         if(!state.autoPlaying) return;
-        if(caption) caption.textContent = (state.autoIndex+1)+" / "+set.items.length+"：続いて英語。聞いたら声に出して繰り返そう";
-        // Step 2: English phrase, then a pause for the user to repeat aloud.
+        if(caption) caption.textContent = (state.autoIndex+1)+" / "+set.items.length+
+          (isW3 ? "：正解の英語です" : "：続いて英語。聞いたら声に出して繰り返そう");
+        // Step 2: English phrase (the "answer" for week 3, or the target phrase for week 1/2).
         speak(item.en, "en-US", function(){
           if(!state.autoPlaying) return;
           state.autoTimer = setTimeout(function(){
             if(!state.autoPlaying) return;
             state.autoIndex++;
             playAutoStep();
-          }, 2600);
+          }, nextPause);
         });
-      }, 500);
+      }, thinkPause);
     });
   }
 
@@ -582,10 +664,14 @@
     document.querySelectorAll(".playbtn").forEach(function(b){ b.classList.remove("active"); });
     var btn = document.querySelector('.playbtn[data-idx="'+idx+'"]');
     if(btn) btn.classList.add("active");
+    var isW3 = state.week === 3;
     speak(item.ja, "ja-JP", function(){
-      speak(item.en, "en-US", function(){
-        if(btn) btn.classList.remove("active");
-      });
+      var gap = isW3 ? 1200 : 0;
+      setTimeout(function(){
+        speak(item.en, "en-US", function(){
+          if(btn) btn.classList.remove("active");
+        });
+      }, gap);
     });
   }
 
